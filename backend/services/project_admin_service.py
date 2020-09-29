@@ -131,8 +131,13 @@ class ProjectAdminService:
             current_project = project.as_dto_for_report()
             project.update(project_dto)
 
-            oeg_report_service = OegReportService()
-            oeg_report_service.report_data_to_osm(project_dto, current_project)
+            # report project data to oeg-reporter service if it's configured
+            if (
+                current_app.config["OEG_REPORTER_SERVICE_BASE_URL"]
+                and current_app.config["OEG_REPORTER_AUTHORIZATION_TOKEN"]
+            ):
+                oeg_report_service = OegReportService()
+                oeg_report_service.report_data_to_osm(project_dto, current_project)
         else:
             raise ValueError(
                 str(project_id)
